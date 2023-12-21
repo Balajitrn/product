@@ -8,6 +8,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/categories")
 public class CategoryController {
@@ -31,5 +33,20 @@ public class CategoryController {
         return ResponseEntity.ok(categoryDTO);
     }
 
+    @GetMapping
+    public ResponseEntity<List<CategoryDTO>> getCategoryList(){
+        return new ResponseEntity<>(categoryService.getAllCategory(),HttpStatus.OK);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<CategoryDTO> updateCategoryById(@PathVariable Long id,@RequestBody CategoryDTO categoryDTO) throws NotFoundException {
+        return new ResponseEntity<>(categoryService.updateCategoryById(id,categoryDTO),HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteById(@PathVariable Long id) throws NotFoundException {
+        categoryService.deleteById(id);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
     // Additional endpoints as needed
 }
