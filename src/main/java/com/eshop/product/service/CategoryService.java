@@ -8,7 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class CategoryService {
@@ -28,6 +30,28 @@ public class CategoryService {
 
         Category savedCategory = categoryRepository.save(category);
         return new CategoryDTO(savedCategory.getId(), savedCategory.getName(), savedCategory.getDescription());
+    }
+
+    @Transactional
+    public List<CategoryDTO> getAllCategory(){
+        return categoryRepository.findAll().stream().map(this::convertToDto).collect(Collectors.toList());
+    }
+
+    @Transactional
+    public CategoryDTO updateCategoryById(Long id, CategoryDTO categoryDTO) throws NotFoundException {
+        Category category = categoryRepository.findById(id).orElseThrow(()->new NotFoundException("Category no found" + id));
+        category.setName(categoryDTO.getName());
+        category.setDescription(categoryDTO.getDescription());
+        Category updatedCategory = categoryRepository.save(category);
+        return convertToDto(updatedCategory);
+    }
+
+    @Transactional
+    public void deleteById(Long id) throws NotFoundException {
+        if(!categoryRepository.existsById(id)){
+            throw new NotFoundException("Category not found" + id);
+        }
+        categoryRepository.deleteById(id) ;
     }
 
     private CategoryDTO convertToDto(Category category) {
