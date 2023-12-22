@@ -106,6 +106,11 @@ public class ProductService {
     }
 
 
+    /**
+     * method to convert the entity to DTO
+     * @param product entity
+     * @return product Dto
+     */
     private ProductDTO convertToDto(Product product) {
         return new ProductDTO(
                 product.getId(),
