@@ -29,7 +29,7 @@ public class ProductController {
     @GetMapping("/{productId}")
     public ResponseEntity<ProductDTO> getProductById(@PathVariable Long productId) throws NotFoundException {
         ProductDTO productDTO = productService.getProductById(productId);
-        return ResponseEntity.ok(productDTO);
+        return ResponseEntity.ok(productDTO); //new
     }
 
     @GetMapping
