@@ -3,8 +3,10 @@ package com.eshop.product.service;
 import com.eshop.product.dto.ProductDTO;
 import com.eshop.product.entity.Category;
 import com.eshop.product.entity.Product;
+import com.eshop.product.entity.Rating;
 import com.eshop.product.repository.CategoryRepository;
 import com.eshop.product.repository.ProductRepository;
+import com.eshop.product.repository.RatingRepository;
 import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -21,10 +23,13 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
 
+    private final RatingRepository ratingRepository;
+
     @Autowired
-    public ProductService(ProductRepository productRepository, CategoryRepository categoryRepository) {
+    public ProductService(ProductRepository productRepository, CategoryRepository categoryRepository,RatingRepository ratingRepository) {
         this.productRepository = productRepository;
         this.categoryRepository = categoryRepository;
+        this.ratingRepository = ratingRepository;
     }
 
     /**
@@ -122,6 +127,25 @@ public class ProductService {
     }
     productRepository.deleteById(productId);
     }
+
+/**
+ * rate a product
+ * @param productId
+ * @param ratingValue
+ * void
+ * throws NotFoundException
+ */
+
+public void rateProduct(Long productId, double ratingValue) {
+    Product product = productRepository.findById(productId)
+            .orElseThrow(()-> new RuntimeException("Product not found"));
+    Rating rating = new Rating();
+    rating.setRating(ratingValue);
+    rating.setProduct(product);
+
+    ratingRepository.save(rating);
+
+}
 
 
     /**

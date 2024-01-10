@@ -5,6 +5,7 @@ import com.eshop.product.entity.Product;
 import com.eshop.product.service.ProductService;
 import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,6 +25,13 @@ public class ProductController {
     @PostMapping
     public ProductDTO createProduct(@RequestBody ProductDTO productDto) throws NotFoundException {
         return productService.saveProduct(productDto);
+    }
+
+    @PostMapping("/{productId}/rating")
+    public ResponseEntity<String> rateProduct(@RequestParam("ratingValue") double ratingValue, @PathVariable("productId") Long
+                                              productId) {
+        productService.rateProduct(productId,ratingValue);
+        return new ResponseEntity<>("Product rated successfully", HttpStatus.CREATED);
     }
 
 
