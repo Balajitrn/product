@@ -1,5 +1,6 @@
 package com.eshop.product.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -22,5 +23,6 @@ public class Category {
     private String description;
 
     @OneToMany(mappedBy = "category")
+
     private Set<Product> product;
 }

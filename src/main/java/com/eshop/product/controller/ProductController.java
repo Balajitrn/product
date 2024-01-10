@@ -26,10 +26,17 @@ public class ProductController {
         return productService.saveProduct(productDto);
     }
 
+
+
     @GetMapping("/{productId}")
     public ResponseEntity<ProductDTO> getProductById(@PathVariable Long productId) throws NotFoundException {
         ProductDTO productDTO = productService.getProductById(productId);
-        return ResponseEntity.ok(productDTO); //new
+        return ResponseEntity.ok(productDTO);
+    }
+
+    @GetMapping("/category/{categoryId}")
+    public List<ProductDTO> getProductsByCategory(@PathVariable Long categoryId){
+        return productService.findProductsByCategoryId(categoryId);
     }
 
     @GetMapping

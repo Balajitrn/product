@@ -7,6 +7,7 @@ import com.eshop.product.repository.CategoryRepository;
 import com.eshop.product.repository.ProductRepository;
 import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -54,11 +55,28 @@ public class ProductService {
     }
 
     /**
+     * search products based on category and product name
+     *
+     */
+
+
+    /**
      * get all products
      * @return list of products
      */
     public List<ProductDTO> getAllProducts() {
         return productRepository.findAll().stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Retrieve list of products based on categoryId
+     * @param categoryId
+     */
+    public  List<ProductDTO> findProductsByCategoryId(Long categoryId) {
+        List<Product> products = productRepository.findByCategoryId(categoryId);
+        return products.stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
     }
