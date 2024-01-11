@@ -1,18 +1,22 @@
 package com.eshop.product.service;
 
 import com.eshop.product.dto.ProductDTO;
+import com.eshop.product.dto.ReviewDTO;
 import com.eshop.product.entity.Category;
 import com.eshop.product.entity.Product;
 import com.eshop.product.entity.Rating;
+import com.eshop.product.entity.Review;
 import com.eshop.product.repository.CategoryRepository;
 import com.eshop.product.repository.ProductRepository;
 import com.eshop.product.repository.RatingRepository;
+import com.eshop.product.repository.ReviewRepository;
 import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -25,11 +29,14 @@ public class ProductService {
 
     private final RatingRepository ratingRepository;
 
+    private final ReviewRepository reviewRepository;
+
     @Autowired
-    public ProductService(ProductRepository productRepository, CategoryRepository categoryRepository,RatingRepository ratingRepository) {
+    public ProductService(ProductRepository productRepository, CategoryRepository categoryRepository,RatingRepository ratingRepository, ReviewRepository reviewRepository) {
         this.productRepository = productRepository;
         this.categoryRepository = categoryRepository;
         this.ratingRepository = ratingRepository;
+        this.reviewRepository = reviewRepository;
     }
 
     /**
@@ -136,7 +143,7 @@ public class ProductService {
  * throws NotFoundException
  */
 
-public void rateProduct(Long productId, double ratingValue) {
+    public void rateProduct(Long productId, double ratingValue){
     Product product = productRepository.findById(productId)
             .orElseThrow(()-> new RuntimeException("Product not found"));
     Rating rating = new Rating();
@@ -144,8 +151,26 @@ public void rateProduct(Long productId, double ratingValue) {
     rating.setProduct(product);
 
     ratingRepository.save(rating);
-
 }
+
+/**
+ * Review product
+ *
+ */
+
+    public void  reviewProduct(Long productId, ReviewDTO reviewDTO) {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(()-> new RuntimeException("Product not found"));
+
+        Review review = new Review();
+        review.setUsername(reviewDTO.getUsername());
+        review.setComment(reviewDTO.getComment());
+        review.setProduct(product);
+        review.setCreatedDate(new Date());
+
+        reviewRepository.save(review);
+    }
+
 
 
     /**

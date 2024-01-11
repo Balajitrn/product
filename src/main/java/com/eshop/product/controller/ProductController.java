@@ -1,6 +1,7 @@
 package com.eshop.product.controller;
 
 import com.eshop.product.dto.ProductDTO;
+import com.eshop.product.dto.ReviewDTO;
 import com.eshop.product.entity.Product;
 import com.eshop.product.service.ProductService;
 import javassist.NotFoundException;
@@ -29,9 +30,15 @@ public class ProductController {
 
     @PostMapping("/{productId}/rating")
     public ResponseEntity<String> rateProduct(@RequestParam("ratingValue") double ratingValue, @PathVariable("productId") Long
-                                              productId) {
+                                              productId)  {
         productService.rateProduct(productId,ratingValue);
         return new ResponseEntity<>("Product rated successfully", HttpStatus.CREATED);
+    }
+
+    @PostMapping("/{productId}/review")
+    public ResponseEntity<String> UserReview(@PathVariable Long productId, @RequestBody ReviewDTO reviewDTO) {
+        productService.reviewProduct(productId,reviewDTO);
+        return new ResponseEntity<>("Review submitted successfully",HttpStatus.CREATED);
     }
 
 
