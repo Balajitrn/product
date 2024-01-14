@@ -28,6 +28,7 @@ public class ProductController {
         return productService.saveProduct(productDto);
     }
 
+
     @PostMapping("/{productId}/rating")
     public ResponseEntity<String> rateProduct(@RequestParam("ratingValue") double ratingValue, @PathVariable("productId") Long
                                               productId)  {

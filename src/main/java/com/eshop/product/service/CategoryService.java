@@ -1,8 +1,13 @@
 package com.eshop.product.service;
 
 import com.eshop.product.dto.CategoryDTO;
+import com.eshop.product.dto.SubCategoryDTO;
 import com.eshop.product.entity.Category;
+import com.eshop.product.entity.Product;
+import com.eshop.product.entity.SubCategory;
 import com.eshop.product.repository.CategoryRepository;
+import com.eshop.product.repository.ProductRepository;
+import com.eshop.product.repository.SubCategoryRepository;
 import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,10 +21,15 @@ import java.util.stream.Collectors;
 public class CategoryService {
 
     private final CategoryRepository categoryRepository;
+    private final ProductRepository productRepository;
+
+    private final SubCategoryRepository subCategoryRepository;
 
     @Autowired
-    public CategoryService(CategoryRepository categoryRepository) {
+    public CategoryService(CategoryRepository categoryRepository, ProductRepository productRepository,SubCategoryRepository subCategoryRepository) {
         this.categoryRepository = categoryRepository;
+        this.productRepository = productRepository;
+        this.subCategoryRepository = subCategoryRepository;
     }
 
     @Transactional
@@ -27,14 +37,30 @@ public class CategoryService {
         Category category = new Category();
         category.setName(categoryDTO.getName());
         category.setDescription(categoryDTO.getDescription());
-
         Category savedCategory = categoryRepository.save(category);
         return new CategoryDTO(savedCategory.getId(), savedCategory.getName(), savedCategory.getDescription());
     }
 
+
+    @Transactional
+    public SubCategoryDTO saveSubCategory(SubCategoryDTO subcategoryDTO ) throws NotFoundException {
+      SubCategory subCategory = convertToSubCategoryEntity(subcategoryDTO);
+      SubCategory savedSubCategory = subCategoryRepository.save(subCategory);
+      return convertToSubCategoryDTO(savedSubCategory);
+
+
+    }
     @Transactional
     public List<CategoryDTO> getAllCategory(){
         return categoryRepository.findAll().stream().map(this::convertToDto).collect(Collectors.toList());
+    }
+
+    public List<SubCategoryDTO> findSubCategoriesByCategory(Long parentCategoryId) {
+        List<SubCategory> subCategories = subCategoryRepository.findBySubCategoryId(parentCategoryId);
+        return subCategories.stream()
+                .map(this::convertToSubCategoryDTO)
+                .collect(Collectors.toList());
+
     }
 
     @Transactional
@@ -51,8 +77,9 @@ public class CategoryService {
         if(!categoryRepository.existsById(id)){
             throw new NotFoundException("Category not found" + id);
         }
-        categoryRepository.deleteById(id) ;
+        categoryRepository.deleteById(id);
     }
+
 
     private CategoryDTO convertToDto(Category category) {
         return new CategoryDTO(
@@ -60,7 +87,33 @@ public class CategoryService {
                 category.getName(),
                 category.getDescription()
                         != null ? category.getDescription() : null);
+
     }
+
+    private SubCategoryDTO convertToSubCategoryDTO(SubCategory subCategory) {
+        return new SubCategoryDTO(
+                subCategory.getId(),
+                subCategory.getName(),
+                subCategory.getSubCategory() != null ? subCategory.getSubCategory().getId() : null);
+    }
+
+    private SubCategory convertToSubCategoryEntity(SubCategoryDTO subCategoryDTO) throws NotFoundException {
+        SubCategory subCategory = new SubCategory();
+        subCategory.setName(subCategoryDTO.getName());
+        if(subCategoryDTO.getParentCategoryId() !=null) {
+            Category mainCategory = categoryRepository.findById(subCategoryDTO.getParentCategoryId())
+                    .orElseThrow(()-> new NotFoundException("Category not found"));
+            subCategory.setSubCategory(mainCategory);
+        }
+        else {
+            throw new IllegalArgumentException("CategoryID is required");
+        }
+
+        return subCategory;
+
+    }
+
+
 
     @Transactional
     public CategoryDTO getCategoryById(Long categoryId) throws NotFoundException {
@@ -71,4 +124,10 @@ public class CategoryService {
             throw new NotFoundException("Category not found with ID: "+ categoryId);
         }
     }
+
+
+
+
+
+
 }
