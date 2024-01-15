@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
@@ -51,9 +52,18 @@ public class ProductController {
     }
 
     @GetMapping("/category/{categoryId}")
-    public List<ProductDTO> getProductsByCategory(@PathVariable Long categoryId){
+    public List<ProductDTO> getProductsByCategory(@PathVariable Long categoryId) throws NotFoundException{
         return productService.findProductsByCategoryId(categoryId);
     }
+
+    @GetMapping("/search")
+    public List<ProductDTO> searchProducts(@RequestParam String name, @RequestParam Long categoryId) throws NotFoundException {
+        return productService.searchProductsByNameAndCategory(name, categoryId);
+    }
+
+
+
+
 
     @GetMapping
     public ResponseEntity<List<ProductDTO>> getAllProducts() {

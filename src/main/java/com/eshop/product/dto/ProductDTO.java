@@ -16,4 +16,6 @@ public class ProductDTO {
     private String description;
     private BigDecimal price;
     private Long categoryId; // Assuming category is identified by its primary key
+
+
 }

@@ -16,6 +16,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -86,11 +87,16 @@ public class ProductService {
      * Retrieve list of products based on categoryId
      * @param categoryId
      */
-    public  List<ProductDTO> findProductsByCategoryId(Long categoryId) {
+    public  List<ProductDTO> findProductsByCategoryId(Long categoryId) throws NotFoundException {
         List<Product> products = productRepository.findByCategoryId(categoryId);
-        return products.stream()
-                .map(this::convertToDto)
-                .collect(Collectors.toList());
+        if(products.isEmpty()) {
+            throw new NotFoundException("Product not found");
+        }
+        else {
+            return products.stream()
+                    .map(this::convertToDto)
+                    .collect(Collectors.toList());
+        }
     }
 
     /**
@@ -170,6 +176,20 @@ public class ProductService {
 
         reviewRepository.save(review);
     }
+
+
+   public List<ProductDTO> searchProductsByNameAndCategory(String name, Long categoryId) throws NotFoundException {
+      List <Product> product = productRepository.findProductsByNameAndCategoryId(name, categoryId);
+      if(product.isEmpty() ){
+          throw new NotFoundException("Product not found");
+      }
+      else {
+          return product.stream()
+                  .map(this::convertToDto)
+                  .collect(Collectors.toList());
+      }
+
+   }
 
 
 
