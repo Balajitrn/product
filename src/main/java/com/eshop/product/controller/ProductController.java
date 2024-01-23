@@ -15,6 +15,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/products")
+@CrossOrigin(origins = "http://localhost:3000") // React app's URL
 public class ProductController {
 
     private final ProductService productService;

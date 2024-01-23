@@ -68,12 +68,6 @@ public class ProductService {
     }
 
     /**
-     * search products based on category and product name
-     *
-     */
-
-
-    /**
      * get all products
      * @return list of products
      */
@@ -103,7 +97,7 @@ public class ProductService {
      * method to update the product information
      * @param productId
      * @param productDTO
-     * @return
+     * @return productDTO
      * @throws NotFoundException
      */
     @Transactional
@@ -145,8 +139,8 @@ public class ProductService {
  * rate a product
  * @param productId
  * @param ratingValue
- * void
- * throws NotFoundException
+ * @return void
+ * throws RunTimeException
  */
 
     public void rateProduct(Long productId, double ratingValue){
@@ -161,7 +155,9 @@ public class ProductService {
 
 /**
  * Review product
- *
+ * @param productId
+ * @param reviewDTO
+ * @return void
  */
 
     public void  reviewProduct(Long productId, ReviewDTO reviewDTO) {
@@ -177,6 +173,12 @@ public class ProductService {
         reviewRepository.save(review);
     }
 
+    /**
+     * search products based on category and product name
+     * @param name
+     * @param categoryId
+     * @throws NotFoundException
+     */
 
    public List<ProductDTO> searchProductsByNameAndCategory(String name, Long categoryId) throws NotFoundException {
       List <Product> product = productRepository.findProductsByNameAndCategoryId(name, categoryId);
@@ -190,8 +192,6 @@ public class ProductService {
       }
 
    }
-
-
 
     /**
      * method to convert the entity to DTO
@@ -223,5 +223,5 @@ public class ProductService {
 
         return product;
     }
-    //service method like saveProduct, getProduct, etc.
+
 }

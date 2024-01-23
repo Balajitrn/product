@@ -13,18 +13,6 @@ import java.util.List;
 @Repository
 public interface ProductRepository extends JpaRepository<Product,Long> {
     // custom query methods if needed
-
-//    @Query("SELECT p FROM Product p WHERE " +
-//            "(:searchTerm IS NULL OR LOWER(p.name) LIKE LOWER(CONCAT('%', :searchTerm, '%'))) " +
-//            "AND (:categoryId IS NULL OR p.category.id = :categoryId) " +
-//            "AND (:minPrice IS NULL OR p.price >= :minPrice) " +
-//            "AND (:maxPrice IS NULL OR p.price <= :maxPrice)")
-//    List<Product> searchProducts(
-//            @Param("searchTerm") String searchTerm,
-//            @Param("categoryId") Long categoryId,
-//            @Param("minPrice") BigDecimal minPrice,
-//            @Param("maxPrice") BigDecimal maxPrice
-//    );
     List<Product> findByCategoryId(Long categoryId);
 
     List<Product> findProductsByNameAndCategoryId(String name, Long categoryId);
