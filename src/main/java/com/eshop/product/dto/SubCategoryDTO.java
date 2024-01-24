@@ -1,21 +1,16 @@
 package com.eshop.product.dto;
 
-import com.eshop.product.entity.Category;
 import lombok.*;
-
-import java.util.List;
-
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
 @Getter
 @Setter
-public class CategoryDTO {
+public class SubCategoryDTO  {
     private Long id; // Optional for POST request
     private String name;
-    private String description;
-
+    private Long parentCategoryId;
 
 
 

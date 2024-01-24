@@ -5,6 +5,7 @@ import lombok.Data;
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "products")
@@ -24,9 +25,15 @@ public class Product {
     @Column(nullable = false)
     private BigDecimal price;
 
+    @Column(nullable = false)
+    private int popularityRate;
+
     @ManyToOne
     @JoinColumn(name = "category_id",nullable = false)
     private Category category;
+
+    @OneToMany(mappedBy = "product",cascade = CascadeType.ALL)
+    private List<Rating> ratings;
 
     @Column(nullable = false)
     @Temporal(TemporalType.TIMESTAMP)

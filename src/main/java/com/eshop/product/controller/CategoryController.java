@@ -1,6 +1,10 @@
 package com.eshop.product.controller;
 
 import com.eshop.product.dto.CategoryDTO;
+import com.eshop.product.dto.ProductDTO;
+import com.eshop.product.dto.SubCategoryDTO;
+import com.eshop.product.entity.Category;
+import com.eshop.product.entity.Product;
 import com.eshop.product.service.CategoryService;
 import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +37,11 @@ public class CategoryController {
         return ResponseEntity.ok(categoryDTO);
     }
 
+    @GetMapping("/{categoryId}/subcategories")
+    public List<SubCategoryDTO> getSubCategoriesByCategoryId(@PathVariable Long categoryId) {
+        return categoryService.findSubCategoriesByCategory(categoryId);
+    }
+
     @GetMapping
     public ResponseEntity<List<CategoryDTO>> getCategoryList(){
         return new ResponseEntity<>(categoryService.getAllCategory(),HttpStatus.OK);
@@ -49,4 +58,6 @@ public class CategoryController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
     // Additional endpoints as needed
+
+
 }

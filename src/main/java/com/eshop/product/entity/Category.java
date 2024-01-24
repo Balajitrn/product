@@ -1,9 +1,11 @@
 package com.eshop.product.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Data;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -23,4 +25,17 @@ public class Category {
 
     @OneToMany(mappedBy = "category")
     private Set<Product> product;
+
+    @OneToMany(mappedBy = "subCategory",cascade = CascadeType.ALL)
+    private Set<SubCategory> subcategories;
+
+
+
+
+
+
+
+
+
+
 }

@@ -1,15 +1,23 @@
 package com.eshop.product.service;
 
 import com.eshop.product.dto.ProductDTO;
+import com.eshop.product.dto.ReviewDTO;
 import com.eshop.product.entity.Category;
 import com.eshop.product.entity.Product;
+import com.eshop.product.entity.Rating;
+import com.eshop.product.entity.Review;
 import com.eshop.product.repository.CategoryRepository;
 import com.eshop.product.repository.ProductRepository;
+import com.eshop.product.repository.RatingRepository;
+import com.eshop.product.repository.ReviewRepository;
 import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -20,10 +28,16 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
 
+    private final RatingRepository ratingRepository;
+
+    private final ReviewRepository reviewRepository;
+
     @Autowired
-    public ProductService(ProductRepository productRepository, CategoryRepository categoryRepository) {
+    public ProductService(ProductRepository productRepository, CategoryRepository categoryRepository,RatingRepository ratingRepository, ReviewRepository reviewRepository) {
         this.productRepository = productRepository;
         this.categoryRepository = categoryRepository;
+        this.ratingRepository = ratingRepository;
+        this.reviewRepository = reviewRepository;
     }
 
     /**
@@ -64,10 +78,39 @@ public class ProductService {
     }
 
     /**
+     * featured products
+     * @return List of featured products
+     */
+
+    public List<ProductDTO> getFeaturedProducts() {
+        return productRepository.findAll().stream()
+                .filter(product -> product.getPopularityRate() > 4)
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
+    }
+
+
+    /**
+     * Retrieve list of products based on categoryId
+     * @param categoryId
+     */
+    public  List<ProductDTO> findProductsByCategoryId(Long categoryId) throws NotFoundException {
+        List<Product> products = productRepository.findByCategoryId(categoryId);
+        if(products.isEmpty()) {
+            throw new NotFoundException("Product not found");
+        }
+        else {
+            return products.stream()
+                    .map(this::convertToDto)
+                    .collect(Collectors.toList());
+        }
+    }
+
+    /**
      * method to update the product information
      * @param productId
      * @param productDTO
-     * @return
+     * @return productDTO
      * @throws NotFoundException
      */
     @Transactional
@@ -105,6 +148,66 @@ public class ProductService {
     productRepository.deleteById(productId);
     }
 
+/**
+ * rate a product
+ * @param productId
+ * @param ratingValue
+ * @return void
+ * throws RunTimeException
+ */
+
+    public void rateProduct(Long productId, double ratingValue){
+    Product product = productRepository.findById(productId)
+            .orElseThrow(()-> new RuntimeException("Product not found"));
+    Rating rating = new Rating();
+    rating.setRating(ratingValue);
+    rating.setProduct(product);
+
+    ratingRepository.save(rating);
+}
+
+/**
+ * Review product
+ * @param productId
+ * @param reviewDTO
+ * @return void
+ */
+
+    public void  reviewProduct(Long productId, ReviewDTO reviewDTO) {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(()-> new RuntimeException("Product not found"));
+
+        Review review = new Review();
+        review.setUsername(reviewDTO.getUsername());
+        review.setComment(reviewDTO.getComment());
+        review.setProduct(product);
+        review.setCreatedDate(new Date());
+
+        reviewRepository.save(review);
+    }
+
+    /**
+     * search products based on category and product name
+     * @param name
+     * @param categoryId
+     * @throws NotFoundException
+     */
+
+   public List<ProductDTO> searchProductsByNameAndCategory(String name, Long categoryId) throws NotFoundException {
+      List <Product> product = productRepository.findProductsByNameAndCategoryId(name, categoryId);
+      if(product.isEmpty() ){
+          throw new NotFoundException("Product not found");
+      }
+      else {
+          return product.stream()
+                  .map(this::convertToDto)
+                  .collect(Collectors.toList());
+      }
+
+   }
+
+
+
 
     /**
      * method to convert the entity to DTO
@@ -117,7 +220,8 @@ public class ProductService {
                 product.getName(),
                 product.getDescription(),
                 product.getPrice(),
-                product.getCategory() != null ? product.getCategory().getId() : null);
+                product.getCategory() != null ? product.getCategory().getId() : null,
+                product.getPopularityRate());
          }
 
     private Product convertToEntity(ProductDTO productDto) throws NotFoundException {
@@ -133,8 +237,9 @@ public class ProductService {
         } else {
             throw new IllegalArgumentException("Category ID is required");
         }
+        product.setPopularityRate(productDto.getPopularityRate());
 
         return product;
     }
-    //service method like saveProduct, getProduct, etc.
+
 }
