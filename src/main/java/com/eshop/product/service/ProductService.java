@@ -78,6 +78,19 @@ public class ProductService {
     }
 
     /**
+     * featured products
+     * @return List of featured products
+     */
+
+    public List<ProductDTO> getFeaturedProducts() {
+        return productRepository.findAll().stream()
+                .filter(product -> product.getPopularityRate() > 4)
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
+    }
+
+
+    /**
      * Retrieve list of products based on categoryId
      * @param categoryId
      */
@@ -193,6 +206,9 @@ public class ProductService {
 
    }
 
+
+
+
     /**
      * method to convert the entity to DTO
      * @param product entity
@@ -204,7 +220,8 @@ public class ProductService {
                 product.getName(),
                 product.getDescription(),
                 product.getPrice(),
-                product.getCategory() != null ? product.getCategory().getId() : null);
+                product.getCategory() != null ? product.getCategory().getId() : null,
+                product.getPopularityRate());
          }
 
     private Product convertToEntity(ProductDTO productDto) throws NotFoundException {
@@ -220,6 +237,7 @@ public class ProductService {
         } else {
             throw new IllegalArgumentException("Category ID is required");
         }
+        product.setPopularityRate(productDto.getPopularityRate());
 
         return product;
     }

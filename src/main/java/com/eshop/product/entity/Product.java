@@ -25,6 +25,9 @@ public class Product {
     @Column(nullable = false)
     private BigDecimal price;
 
+    @Column(nullable = false)
+    private int popularityRate;
+
     @ManyToOne
     @JoinColumn(name = "category_id",nullable = false)
     private Category category;

@@ -52,6 +52,12 @@ public class ProductController {
         return ResponseEntity.ok(productDTO);
     }
 
+    @GetMapping("/featured")
+    public ResponseEntity<List<ProductDTO>> featuredProducts() {
+        List<ProductDTO> popularProducts = productService.getFeaturedProducts();
+        return ResponseEntity.ok(popularProducts);
+    }
+
     @GetMapping("/category/{categoryId}")
     public List<ProductDTO> getProductsByCategory(@PathVariable Long categoryId) throws NotFoundException{
         return productService.findProductsByCategoryId(categoryId);
